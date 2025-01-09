@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * Сервис для выдачи и возврата книг
@@ -36,9 +37,10 @@ public class LibraryService {
      */
 
     public BorrowRecordDto borrowBook(Long id, String token) {
-        bookRepository.findById(id).map(value -> {
-            if (value.getAmount() > 0) {
-                changeAmount(value, -1);
+        Optional<Book> book = bookRepository.findById(id);
+        if (book.isPresent()) {
+            if (book.get().getAmount() > 0) {
+                changeAmount(book.get(),-1);
                 return mapper.toBorrowRecordDto(borrowRecordRepository.save(new BorrowRecord(
                         null,
                         jwtService.extractId(token.substring(BEARER_PREFIX.length())),
@@ -46,8 +48,9 @@ public class LibraryService {
                         todayToString(),
                         null)));
             }
+        } else {
             return null;
-        });
+        }
         return null;
     }
 

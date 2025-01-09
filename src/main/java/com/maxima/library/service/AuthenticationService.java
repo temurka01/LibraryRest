@@ -4,16 +4,16 @@ import com.maxima.library.dto.AccountDto;
 import com.maxima.library.dto.JwtAuthenticationResponse;
 import com.maxima.library.dto.SignInDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+/**
+ * Сервис для регистрации и аутентификации пользователей
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
     private final AccountService accountService;
     private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
 
     /**
      * Регистрация пользователя
@@ -32,14 +32,6 @@ public class AuthenticationService {
      * @return токен
      */
     public JwtAuthenticationResponse signIn(SignInDto signInDto) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                signInDto.getUsername(),
-                signInDto.getPassword()
-        ));
-
-        return new JwtAuthenticationResponse(jwtService
-                .generateToken(accountService
-                .userDetailsService()
-                .loadUserByUsername(signInDto.getUsername())));
+        return new JwtAuthenticationResponse(jwtService.generateToken(accountService.getByUsername(signInDto.getUsername())));
     }
 }

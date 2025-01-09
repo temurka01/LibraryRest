@@ -1,5 +1,6 @@
-package com.maxima.library.config.security.filters;
+package com.maxima.library.filters;
 
+import com.maxima.library.model.Account;
 import com.maxima.library.service.AccountService;
 import com.maxima.library.service.JwtService;
 import jakarta.servlet.FilterChain;
@@ -11,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -34,24 +34,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (!StringUtils.hasLength(authHeader) || !StringUtils.startsWithIgnoreCase(authHeader, BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
         } else {
-
             // Обрезаем префикс и получаем имя пользователя из токена
             String jwt = authHeader.substring(BEARER_PREFIX.length());
             String username = jwtService.extractUserName(jwt);
 
             if (StringUtils.hasLength(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = accountService
-                        .userDetailsService()
-                        .loadUserByUsername(username);
+                Account account = accountService.getByUsername(username);
 
                 // Если токен валиден, то аутентифицируем пользователя
-                if (jwtService.isTokenValid(jwt, userDetails)) {
+                if (jwtService.isTokenValid(jwt, account)) {
                     SecurityContext context = SecurityContextHolder.createEmptyContext();
 
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
+                            account,
                             null,
-                            userDetails.getAuthorities()
+                            account.getAuthorities()
                     );
 
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

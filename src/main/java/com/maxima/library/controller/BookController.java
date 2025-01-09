@@ -25,12 +25,12 @@ public class BookController {
         librarianService.deleteBook(bookId);
     }
 
-    @GetMapping("/all-books")
+    @GetMapping("/books")
     public ResponseEntity<List<Book>> allBooks() {
         return ResponseEntity.ok(librarianService.allBooks());
     }
 
-    @GetMapping("/get-book/{bookId}")
+    @GetMapping("/books/{bookId}")
     public ResponseEntity<Book> getBook(@PathVariable Long bookId) {
         return ResponseEntity.ok(librarianService.getBook(bookId));
     }

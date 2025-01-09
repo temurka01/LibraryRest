@@ -7,7 +7,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.*;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -16,6 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * Сервис для работы с jwt
+ */
 @Service
 public class JwtService {
     @Value("${token.signing.key}")
@@ -34,29 +36,26 @@ public class JwtService {
     /**
      * Генерация токена
      *
-     * @param userDetails данные пользователя
+     * @param account данные пользователя
      * @return токен
      */
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(Account account) {
         Map<String, Object> claims = new HashMap<>();
-        if (userDetails instanceof Account customUserDetails) {
-            claims.put("id", customUserDetails.getId());
-            claims.put("username", customUserDetails.getUsername());
-            claims.put("role", customUserDetails.getRole());
-        }
-        return generateToken(claims, userDetails);
+        claims.put("id", account.getId());
+        claims.put("username", account.getUsername());
+        claims.put("role", account.getRole());
+        return generateToken(claims, account);
     }
 
     /**
      * Проверка токена на валидность
      *
      * @param token       токен
-     * @param userDetails данные пользователя
+     * @param account данные пользователя
      * @return true, если токен валиден
      */
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String userName = extractUserName(token);
-        return (userName.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    public boolean isTokenValid(String token, Account account) {
+        return (extractUserName(token).equals(account.getUsername())) && !isTokenExpired(token);
     }
 
     /**
@@ -68,21 +67,20 @@ public class JwtService {
      * @return данные
      */
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolvers.apply(claims);
+        return claimsResolvers.apply(extractAllClaims(token));
     }
 
     /**
      * Генерация токена
      *
      * @param extraClaims дополнительные данные
-     * @param userDetails данные пользователя
+     * @param account     данные пользователя
      * @return токен
      */
-    private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    private String generateToken(Map<String, Object> extraClaims, Account account) {
         return Jwts.builder()
                 .claims(extraClaims)
-                .subject(userDetails.getUsername())
+                .subject(account.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 100000 * 60 * 24))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -126,8 +124,7 @@ public class JwtService {
      * @return ключ
      */
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(jwtSigningKey);
-        return Keys.hmacShaKeyFor(keyBytes);
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSigningKey));
     }
 
     public Long extractId(String token) {
