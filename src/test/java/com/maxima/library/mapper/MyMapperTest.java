@@ -93,15 +93,11 @@ public class MyMapperTest {
 
     @Test
     public void testEncodePassword() {
-        String password = "password123";
-        String encodedPassword = myMapper.encodePassword(password);
-        assertNotEquals(password, encodedPassword);
+        assertNotEquals("password123", myMapper.encodePassword("password123"));
     }
 
     @Test
     public void testTodayToString() {
-        String today = myMapper.todayToString();
-        String expectedDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        assertEquals(expectedDate, today);
+        assertEquals(new SimpleDateFormat("yyyy-MM-dd").format(new Date()), myMapper.todayToString());
     }
 }

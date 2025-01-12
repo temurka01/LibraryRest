@@ -16,6 +16,6 @@ public class AccountDto {
     @Email(message = "Некорректный адрес электронной почты")
     private String email;
     @NotBlank
-    @Size(min = 6, max = 12, message = "Пароль должен быть от 6 до 12 символов")
+    @Size(min = 4, max = 12, message = "Пароль должен быть от 4 до 12 символов")
     private String password;
 }

@@ -6,6 +6,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
+@EqualsAndHashCode
 public class BorrowRecordDto {
     private Long userId;
     private Long bookId;

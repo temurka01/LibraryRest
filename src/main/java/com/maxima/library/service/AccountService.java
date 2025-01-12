@@ -4,6 +4,7 @@ import com.maxima.library.dto.AccountDto;
 import com.maxima.library.mapper.MyMapper;
 import com.maxima.library.model.Account;
 import com.maxima.library.repository.AccountRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,7 +30,7 @@ public class AccountService {
             //если совпадений нет, сохраняет
             return accountRepository.save(mapper.toAccount(accountDto));
         } else {
-            return null;
+            throw (new UsernameNotFoundException("Данные уже используются"));
         }
     }
 
@@ -43,7 +44,7 @@ public class AccountService {
     }
 
     /**
-     * Находит аккаунта пользователя по логину
+     * Находит аккаунт по логину
      *
      * @param username логин пользователя
      * @return сущность аккаунта
@@ -60,5 +61,17 @@ public class AccountService {
      */
     public void makeAdmin(Long id) {
         accountRepository.findById(id).ifPresent(value -> accountRepository.save(value.toAdmin()));
+    }
+
+    /**
+     * Создает начального пользователя с именем, паролем и ролью admin
+     */
+    @PostConstruct
+    private void addAdmin() {
+        makeAdmin(addAccount(AccountDto.builder()
+                .email("admin@mail.ru")
+                .username("admin")
+                .password("admin")
+                .build()).getId());
     }
 }

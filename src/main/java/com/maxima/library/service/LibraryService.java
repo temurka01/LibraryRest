@@ -12,9 +12,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Сервис для выдачи и возврата книг
@@ -40,7 +38,7 @@ public class LibraryService {
         Optional<Book> book = bookRepository.findById(id);
         if (book.isPresent()) {
             if (book.get().getAmount() > 0) {
-                changeAmount(book.get(),-1);
+                changeAmount(book.get(), -1);
                 return mapper.toBorrowRecordDto(borrowRecordRepository.save(new BorrowRecord(
                         null,
                         jwtService.extractId(token.substring(BEARER_PREFIX.length())),
@@ -48,8 +46,6 @@ public class LibraryService {
                         todayToString(),
                         null)));
             }
-        } else {
-            return null;
         }
         return null;
     }
@@ -62,16 +58,21 @@ public class LibraryService {
      * @return данные о сохраненной записи
      */
     public BorrowRecordDto returnBook(Long id, String token) {
-        BorrowRecord borrowRecord = borrowRecordRepository
+        List<BorrowRecord> list = borrowRecordRepository
                 .findAll(Example.of(new BorrowRecord(null, jwtService.extractId(token.substring(BEARER_PREFIX.length())), id, null, null)))
                 .stream()
-                .filter((value) -> value.getReturnDate() == null)
+                .filter(value -> value.getReturnDate() == null)
                 .sorted(Comparator.comparing(BorrowRecord::getCheckOutDate))
                 .limit(1)
-                .toList().get(0);
-        borrowRecord.setReturnDate(todayToString());
-        bookRepository.findById(id).ifPresent(value -> changeAmount(value, 1));
-        return mapper.toBorrowRecordDto(borrowRecordRepository.save(borrowRecord));
+                .toList();
+        if (!list.isEmpty()) {
+            BorrowRecord borrowRecord = list.get(0);
+            borrowRecord.setReturnDate(todayToString());
+            bookRepository.findById(id).ifPresent(value -> changeAmount(value, 1));
+            return mapper.toBorrowRecordDto(borrowRecordRepository.save(borrowRecord));
+        } else {
+            throw (new NoSuchElementException("Запись не найдена"));
+        }
     }
 
     /**
