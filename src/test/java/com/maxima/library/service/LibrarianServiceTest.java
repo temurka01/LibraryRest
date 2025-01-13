@@ -1,7 +1,6 @@
 package com.maxima.library.service;
 
 import com.maxima.library.dto.BookDto;
-import com.maxima.library.mapper.MyMapper;
 import com.maxima.library.model.Author;
 import com.maxima.library.model.Book;
 import com.maxima.library.repository.AuthorRepository;
@@ -28,9 +27,6 @@ class LibrarianServiceTest {
 
     @Mock
     private AuthorRepository authorRepository;
-
-    @Mock
-    private MyMapper mapper;
 
     @InjectMocks
     private LibrarianService librarianService;

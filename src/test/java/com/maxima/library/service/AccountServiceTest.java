@@ -34,14 +34,14 @@ class AccountServiceTest {
     void setUp() {
         accountDto = AccountDto.builder()
                 .email("test@example.com")
-                .username("testuser")
+                .username("testUser")
                 .password("password")
                 .build();
 
         account = Account.builder()
                 .id(1L)
                 .email("test@example.com")
-                .username("testuser")
+                .username("testUser")
                 .state(Account.State.CONFIRMED)
                 .role(Account.Role.USER)
                 .registrationDate(new SimpleDateFormat("yyyy-MM-dd").format(new Date()))
@@ -85,7 +85,7 @@ class AccountServiceTest {
 
     @Test
     void getByUsername_Success() {
-        String username = "testuser";
+        String username = "testUser";
         when(accountRepository.findByUsername(username)).thenReturn(Optional.of(account));
 
         Account result = target.getByUsername(username);
@@ -96,7 +96,7 @@ class AccountServiceTest {
 
     @Test
     void getByUsername_NotFound() {
-        String username = "nonexistentuser";
+        String username = "nonExistentUser";
         when(accountRepository.findByUsername(username)).thenReturn(Optional.empty());
 
         assertThrows(UsernameNotFoundException.class, () -> target.getByUsername(username));

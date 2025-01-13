@@ -40,19 +40,19 @@ class AuthenticationServiceTest {
     void setUp() {
         accountDto = AccountDto.builder()
                 .email("test@example.com")
-                .username("testuser")
+                .username("testUser")
                 .password("password")
                 .build();
 
         signInDto = SignInDto.builder()
-                .username("testuser")
+                .username("testUser")
                 .password("password")
                 .build();
 
         account = Account.builder()
                 .id(1L)
                 .email("test@example.com")
-                .username("testuser")
+                .username("testUser")
                 .password("password")
                 .build();
 

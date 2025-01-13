@@ -42,15 +42,11 @@ public class AuthenticationService {
      * @return токен
      */
     public JwtAuthenticationResponse signIn(SignInDto signInDto) {
-        try {
-            Account account = accountService.getByUsername(signInDto.getUsername());
-            if (passwordEncoder.matches(signInDto.getPassword(), account.getPassword())) {
-                return new JwtAuthenticationResponse(jwtService.generateToken(account));
-            } else {
-                throw (new RuntimeException("Пароль не верный"));
-            }
-        } catch (UsernameNotFoundException e) {
-            throw (e);
+        Account account = accountService.getByUsername(signInDto.getUsername());
+        if (passwordEncoder.matches(signInDto.getPassword(), account.getPassword())) {
+            return new JwtAuthenticationResponse(jwtService.generateToken(account));
+        } else {
+            throw (new RuntimeException("Пароль не верный"));
         }
     }
 }
