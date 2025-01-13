@@ -99,7 +99,7 @@ class AuthenticationServiceTest {
         when(accountService.getByUsername(signInDto.getUsername())).thenReturn(account);
         when(passwordEncoder.matches(any(String.class), any(String.class))).thenReturn(false);
 
-        assertThrows(RuntimeException.class,()->authenticationService.signIn(signInDto));
+        assertThrows(RuntimeException.class, () -> authenticationService.signIn(signInDto));
     }
 
     @Test

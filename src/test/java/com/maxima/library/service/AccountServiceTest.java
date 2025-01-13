@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -64,7 +65,7 @@ class AccountServiceTest {
         when(accountRepository.existsByEmail(accountDto.getEmail())).thenReturn(true);
         when(accountRepository.existsByUsername(accountDto.getUsername())).thenReturn(false);
 
-        assertThrows(UsernameNotFoundException.class,()->target.addAccount(accountDto));
+        assertThrows(UsernameNotFoundException.class, () -> target.addAccount(accountDto));
     }
 
     @Test

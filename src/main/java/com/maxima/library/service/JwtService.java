@@ -50,7 +50,7 @@ public class JwtService {
     /**
      * Проверка токена на валидность
      *
-     * @param token       токен
+     * @param token   токен
      * @param account данные пользователя
      * @return true, если токен валиден
      */
