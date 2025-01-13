@@ -16,8 +16,8 @@ public class AccountController {
     private final AccountService accountService;
     private final AuthenticationService authenticationService;
 
-    @PostMapping("/add-account")
-    public ResponseEntity<JwtAuthenticationResponse> createAccount(@Valid @RequestBody AccountDto accountDto) {
+    @PostMapping("/sign-up")
+    public ResponseEntity<JwtAuthenticationResponse> signUp(@Valid @RequestBody AccountDto accountDto) {
         return ResponseEntity.ok(authenticationService.signUp(accountDto));
     }
 
